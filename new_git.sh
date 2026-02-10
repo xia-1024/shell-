@@ -2,8 +2,8 @@
 
 # TODO 补充完成内容，并找出存在的简单语法问题修改
 
-DEFAULT_BRANCH=""  
-REMOTE_NAME=""   
+DEFAULT_BRANCH="master"  
+REMOTE_NAME="origin"   
 
 # 颜色常量
 RED='\033[0;31m'
@@ -56,6 +56,7 @@ check_remote() {
 select_branch() {
     print_info "当前本地分支列表："
     git branch --list | sed 's/*/→/'  
+		BRANCH="master"
 }
 
 # TODO 获取提交信息
@@ -67,6 +68,7 @@ get_commit_msg() {
 main() {
     print_info "===== Git 自动化脚本开始执行 ====="
     
+		select_branch
     
     # 拉取远程最新代码（避免冲突）
     print_info "拉取 $REMOTE_NAME/$BRANCH 最新代码..."
@@ -90,13 +92,19 @@ main() {
     print_info "确认提交信息：$COMMIT_MSG"
     echo -e "${YELLOW}是否确认提交？(y/n)${NC}"
     read -r confirm_commit
-    if [ "$confirm_commit" != "y" ] && [ "$confirm_commit" != "Y" ]; 
+    if [ "$confirm_commit" != "y" ] && [ "$confirm_commit" != "Y" ]; then 
         print_info "用户取消提交，脚本退出"
         exit 0
     fi
     
     # TODO 提交代码
     print_info "提交代码..."
+	  if git commit -m "提交成功"; then
+			print_success "提交成功"
+		else
+			print_error "提交时吧2"
+			exit 1
+		fi	
     
     # 推送代码到远程
     print_info "推送代码到 $REMOTE_NAME/$BRANCH..."
@@ -104,6 +112,7 @@ main() {
     read -r force_push
     if [ "$force_push" = "yes" ]; then
         print_warn "执行强制推送...（风险操作）"
+				echo "$REMOTE_NAME $BRANCH"
         git push "$REMOTE_NAME" "$BRANCH"
     else
         git push -f "$REMOTE_NAME" "$BRANCH"
