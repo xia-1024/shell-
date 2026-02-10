@@ -1,5 +1,6 @@
-kdads
-adada
-da
+#include <stdio.h>
 
-ccdsd
+int main(){
+	printf("Hello, World!\n");
+	return 0;
+}
